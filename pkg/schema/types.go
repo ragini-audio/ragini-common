@@ -29,17 +29,19 @@ const (
 // Track is a music track record in SurrealDB.
 // ID is SHA-256(chromaprint_fingerprint) — stable across renames and re-encodes.
 type Track struct {
-	ID          string      `json:"id"`
-	Title       string      `json:"title"`
-	Artist      string      `json:"artist"`
-	Album       string      `json:"album"`
-	Year        *int        `json:"year,omitempty"`
-	DurationMS  int64       `json:"duration_ms"`
-	FilePath    *string     `json:"file_path,omitempty"`
-	Source      TrackSource `json:"source"`
-	AnalysisTier *int       `json:"analysis_tier,omitempty"`
-	Wishlist    bool        `json:"wishlist"`
-	AnalysedAt  *time.Time  `json:"analysed_at,omitempty"`
+	ID           string      `json:"id"`
+	Title        string      `json:"title"`
+	Artist       string      `json:"artist"`
+	Album        string      `json:"album"`
+	Year         *int        `json:"year,omitempty"`
+	DurationMS   int64       `json:"duration_ms"`
+	FilePath     *string     `json:"file_path,omitempty"`
+	Source       TrackSource `json:"source"`
+	AnalysisTier *int        `json:"analysis_tier,omitempty"`
+	Wishlist     bool        `json:"wishlist"`
+	AnalysedAt   *time.Time  `json:"analysed_at,omitempty"`
+	BPM          *float64    `json:"bpm,omitempty"` // beats per minute; set by Tier-2 analysis
+	Key          *string     `json:"key,omitempty"` // musical key e.g. "C major"; set by Tier-2 analysis
 }
 
 // Profile is a named user profile within a Ragini instance.
