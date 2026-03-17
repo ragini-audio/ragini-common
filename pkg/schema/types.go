@@ -60,6 +60,12 @@ type Track struct {
 	// Lyric fields — populated by Tier-3 analysis.
 	HasLyrics bool   `json:"has_lyrics"`
 	LyricText string `json:"lyric_text,omitempty"`
+
+	// Canonical external IDs — optional, set when available via MusicBrainz or AcoustID lookup.
+	// Primary track identity is always SHA-256(chromaprint_fingerprint).
+	// These secondary IDs enable ecosystem interoperability without requiring any external service.
+	MBID     *string `json:"mbid,omitempty"`     // MusicBrainz Recording ID
+	AcoustID *string `json:"acoustid,omitempty"` // AcoustID fingerprint match ID
 }
 
 // Profile is a named user profile within a Ragini instance.
