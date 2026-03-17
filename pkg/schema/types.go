@@ -59,3 +59,14 @@ type SwipeEvent struct {
 	Signal    SwipeSignal `json:"signal"`
 	Timestamp time.Time   `json:"timestamp"`
 }
+
+// PlayEvent records a single playback session for a track.
+// CompletedPct is 0.0 at start; updated toward 1.0 as playback progresses.
+type PlayEvent struct {
+	ID           string    `json:"id"`
+	TrackID      string    `json:"track_id"`
+	ProfileID    string    `json:"profile_id"`
+	StartedAt    time.Time `json:"started_at"`
+	CompletedPct float64   `json:"completed_pct"`
+	SourcePath   string    `json:"source_path"`
+}
