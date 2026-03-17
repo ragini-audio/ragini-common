@@ -43,6 +43,23 @@ type Track struct {
 	AnalysedAt   *time.Time  `json:"analysed_at,omitempty"`
 	BPM          *float64    `json:"bpm,omitempty"` // beats per minute; set by Tier-2 analysis
 	Key          *string     `json:"key,omitempty"` // musical key e.g. "C major"; set by Tier-2 analysis
+
+	// Mood fields — populated by the MoodAnalyser during Tier-2 analysis.
+	// Values are in the range [0.0, 1.0].
+	// Valence:  0.0 = very negative/sad, 1.0 = very positive/happy (Russell Circumplex x-axis)
+	// Arousal:  0.0 = very calm/sleepy,  1.0 = very excited/intense (Russell Circumplex y-axis)
+	// Energy:   0.0 = very quiet/soft,   1.0 = very loud/powerful
+	Valence *float32 `json:"valence,omitempty"`
+	Arousal *float32 `json:"arousal,omitempty"`
+	Energy  *float32 `json:"energy,omitempty"`
+
+	// Tags are situational descriptors derived from mood values during Tier-2 analysis.
+	// Examples: "energetic", "melancholy", "peaceful", "uplifting", "late-night", "focus".
+	Tags []string `json:"tags,omitempty"`
+
+	// Lyric fields — populated by Tier-3 analysis.
+	HasLyrics bool   `json:"has_lyrics"`
+	LyricText string `json:"lyric_text,omitempty"`
 }
 
 // Profile is a named user profile within a Ragini instance.
