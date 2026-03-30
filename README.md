@@ -4,17 +4,15 @@ Shared Go modules for the Ragini ecosystem.
 
 | Package | Contents |
 |---|---|
-| `pkg/schema` | SurrealDB schema types (Track, Profile, PlayEvent, SwipeEvent, TasteVector, Genre) |
-| `pkg/sargam` | Sargam Music Passport format structures |
-| `pkg/qdrant` | Qdrant collection definitions and query helpers |
-| `pkg/score` | Sargam Score algorithm (Go reference implementation) |
+| `pkg/schema` | Core data types: `Track`, `Profile`, `PlayEvent`, `SwipeEvent`, `Session`, `TagWeight`, `TrackTaxonomy` |
+| `pkg/enrichment` | Tag processing helpers: `BuildTagSentence` (for embedding), `BuildTagsText` (for FTS5 indexing) |
 
 ## Usage
 
 ```go
 import (
     "github.com/ragini-audio/ragini-common/pkg/schema"
-    "github.com/ragini-audio/ragini-common/pkg/score"
+    "github.com/ragini-audio/ragini-common/pkg/enrichment"
 )
 ```
 
@@ -42,8 +40,27 @@ The `schema.Track` struct was updated to support the expanded taxonomy schema:
 New types added:
 - `TagWeight{Tag string, Weight float64, Source string}` — pairs a label with confidence and provenance (`"acoustic"|"llm"|"id3"|"manual"`)
 - `Session{ID, ProfileID, TokenHash, CreatedAt, ExpiresAt}` — authenticated session record
+- `TrackTaxonomy{Moods, Genres, Instruments, LyricTags []TagWeight; Keywords, Characters []string}` — all six join-table dimensions in one struct; used when passing full taxonomy sets between layers
 
 `SwipeEvent.Timestamp` renamed to `SwipeEvent.RatedAt`. `SwipeEvent.Source string` added.
+
+## Track struct changes (schema_version 3, 2026-03-30)
+
+| New field | Notes |
+|-----------|-------|
+| `TagsText string` | Denormalized space-separated string of all taxonomy tag values; updated atomically after every join-table write; indexed by FTS5 porter stemming in both Ragini and Sargam |
+
+## pkg/enrichment helpers
+
+`BuildTagSentence(moods, genres, lyricTags, keywords []string) string`
+Concatenates the four LLM-facing tag dimensions into a single embeddable sentence.
+Instruments and characters are excluded: instruments describe sound (already captured by
+`audio_embedding`); character names are proper nouns that embed poorly.
+Used by Tier-4 to produce the tag-sentence vector that replaces the raw lyric embedding.
+
+`BuildTagsText(moods, genres, instruments, lyricTags, keywords, characters []string) string`
+Produces a space-separated string of all six tag dimensions for FTS5 indexing.
+Used wherever `tags_text` is rebuilt after a taxonomy upsert.
 
 ## Licence
 
